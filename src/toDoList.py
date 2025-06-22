@@ -28,6 +28,7 @@ def current_tasks():
     for i in range(len(tasks)):
         print(str(i+1) + ". " + tasks[i])
 
+
 def print_result(result_text):
     clear_terminal()
     if result_text != "No result":
@@ -35,7 +36,23 @@ def print_result(result_text):
     current_tasks()
 
 
+def save_list_to_file(name_of_list):
+    with open("tasks.txt", "w") as file:
+        for item in tasks:
+            if item != "": 
+                file.write(item+"\n")
+
+
+
+file = open("tasks.txt", "a")
+read_file = open("tasks.txt", "r")
+
 tasks = []
+for item in read_file.readlines():
+    if item != "":
+        tasks.append(item)
+
+
 
 while True:
 
@@ -49,7 +66,9 @@ while True:
             print_result("no duplicates allowed")
             pass
         tasks.append(new_task)
+        save_list_to_file(tasks)
         print_result("task sucessfully added")
+        
 
         
 
@@ -59,7 +78,9 @@ while True:
         current_tasks()
         to_remove = input()
         del tasks[int(to_remove)-1]
+        save_list_to_file(tasks)
         print_result("task sucessfully removed")
+
 
     if choice == "replace":
         clear_terminal()
@@ -70,7 +91,9 @@ while True:
         print("name of which you want to use to replace")
         replacement = input()
         tasks[int(replacement_index)-1] = replacement
+        save_list_to_file(tasks)
         print_result("task sucessfully replaced")
+
     
     if choice == "view":
         print_result("No result")
@@ -78,11 +101,10 @@ while True:
     if choice == "reset":
         tasks = []
         print_result("task sucessfully reset")
+        save_list_to_file(tasks)
         
 
     if choice == "exit":
         print_result("No result")
+        
         break
-
-
-
