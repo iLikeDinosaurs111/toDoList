@@ -28,29 +28,33 @@ def current_tasks():
     for i in range(len(tasks)):
         print(str(i+1) + ". " + tasks[i])
 
-
 def print_result(result_text):
     clear_terminal()
     if result_text != "No result":
         print(result_text)
     current_tasks()
 
-
 def save_list_to_file(name_of_list):
+
     with open("tasks.txt", "w") as file:
         for item in tasks:
             if item != "": 
-                file.write(item+"\n")
+                file.write(item + "~")
+
 
 
 
 file = open("tasks.txt", "a")
-read_file = open("tasks.txt", "r")
+read_file = open("tasks.txt")
 
 tasks = []
-for item in read_file.readlines():
-    if item != "":
-        tasks.append(item)
+build = ""
+for character in read_file.read():
+    if character != "~":
+        build += character
+    else:
+        tasks.append(build)
+        build = ""
 
 
 
@@ -68,9 +72,7 @@ while True:
         tasks.append(new_task)
         save_list_to_file(tasks)
         print_result("task sucessfully added")
-        
 
-        
 
     if choice == "remove":
         clear_terminal()
@@ -97,7 +99,8 @@ while True:
     
     if choice == "view":
         print_result("No result")
-    
+
+
     if choice == "reset":
         tasks = []
         print_result("task sucessfully reset")
@@ -106,5 +109,4 @@ while True:
 
     if choice == "exit":
         print_result("No result")
-        
         break
