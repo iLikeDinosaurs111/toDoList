@@ -1,5 +1,6 @@
 import os
 
+
 def clear_terminal():
     """Clears the terminal screen."""
     if os.name == 'nt':  # For Windows
@@ -64,11 +65,12 @@ while True:
 
     if choice == "add":
         clear_terminal()
+
         print("name of task you want to add")
         new_task = input()
-        if new_task in tasks:
-            print_result("no duplicates allowed")
-            pass
+
+
+
         tasks.append(new_task)
         save_list_to_file(tasks)
         print_result("task sucessfully added")
