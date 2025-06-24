@@ -1,5 +1,6 @@
 import os
 from datetime import datetime
+import fileOperations 
 
 def clear_terminal():
     """Clears the terminal screen."""
@@ -40,32 +41,12 @@ def print_result(result_text):
         print(result_text)
     current_tasks()
 
-def save_list_to_file():
-    # return
-    with open("tasks.txt", "w") as file:
-        tasks_keys = list(tasks.keys())
-        for key, value in tasks.items():
-            file.write(key + "~" + str(value.strftime(format_data)) + "\n")
 
-
-format_data = "%d/%m/%y %H:%M"
-
-file = open("tasks.txt", "a")
-read_file = open("tasks.txt")
 
 tasks = {}
+fileOperations.init_load_from_file("tasks.txt", tasks)
 
-for item in read_file.readlines():
-    parts = item.split("~")
-    tasks[parts[0]] = datetime.strptime(parts[1].strip(), format_data)
-
-# build = ""
-# for character in read_file.read():
-#     if character != "~":
-#         build += character
-#     else:
-#         tasks.append(build)
-#         build = ""
+format_data = "%d/%m/%y %H:%M"
 
 
 
@@ -86,7 +67,7 @@ while True:
 
         tasks[new_task] = task_due_date
 
-        save_list_to_file()
+        fileOperations.save_list_to_file("tasks.txt", tasks)
         print_result("task sucessfully added")
 
 
@@ -101,7 +82,7 @@ while True:
         del tasks[tasks_keys[int(to_remove)-1]]
 
 
-        save_list_to_file()
+        fileOperations.save_list_to_file("tasks.txt", tasks)
         print_result("task sucessfully removed")
 
 
@@ -125,7 +106,7 @@ while True:
             tasks_keys = list(tasks.keys())
 
 
-            save_list_to_file()
+            fileOperations.save_list_to_file("tasks.txt", tasks)
             print_result("task name sucessfully changed")
 
 
@@ -143,7 +124,7 @@ while True:
         tasks_keys = list(tasks.keys())
 
         tasks[tasks_keys[int(replacement_index)-1]] = task_due_date
-        save_list_to_file()
+        fileOperations.save_list_to_file("tasks.txt", tasks)
         print_result("task due date sucesfully changed")
 
     
@@ -154,7 +135,7 @@ while True:
     if choice == "reset":
         tasks = {}
         print_result("task sucessfully reset")
-        save_list_to_file()
+        fileOperations.save_list_to_file("tasks.txt", tasks)
         
 
     if choice == "exit":
