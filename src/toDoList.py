@@ -11,10 +11,11 @@ def clear_terminal():
 def get_input():
 
     print("\noptions")
-    print("add - add a task")
-    print("remove - remove a task")
-    print("replace - replace a task" )
-    print("view - view all tasks")
+    print("add - add a task and its due date")
+    print("remove - remove a task entirely")
+    print("edit task name - change the name of an already-existing task" )
+    print("edit due date - change the due date of an already-existing task" )
+    print("view - view all tasks and due dates")
     print("reset - delete all tasks")
     print("exit - exit the program")
 
@@ -104,13 +105,37 @@ while True:
         print_result("task sucessfully removed")
 
 
-    if choice == "replace":
+    if choice == "edit task name":
+            clear_terminal()
+            print("number of the task you want to edit the name of")
+            current_tasks()
+            replacement_index = input()
+            # clear_terminal()
+            print("the new name of the task")
+            replacement = input()
+
+            tasks_keys = list(tasks.keys())
+            key = tasks_keys[int(replacement_index)-1]
+            value = tasks[key]
+
+            del tasks[key]
+
+            tasks[replacement] = value
+
+            tasks_keys = list(tasks.keys())
+
+
+            save_list_to_file()
+            print_result("task name sucessfully changed")
+
+
+    if choice == "edit due date":
         clear_terminal()
-        print("number of the task you want to replace")
+        print("number of the task you want to change the due date of")
         current_tasks()
         replacement_index = input()
         # clear_terminal()
-        print("date when the task is due: [DD/MM/YY HH:MM]")
+        print("new date when the task is due: [DD/MM/YY HH:MM]")
         replacement_time = input()
 
         task_due_date = datetime.strptime(replacement_time, format_data)
@@ -119,7 +144,7 @@ while True:
 
         tasks[tasks_keys[int(replacement_index)-1]] = task_due_date
         save_list_to_file()
-        print_result("task sucessfully replaced")
+        print_result("task due date sucesfully changed")
 
     
     if choice == "view":
