@@ -8,7 +8,6 @@ def clear_terminal():
         os.system('cls')
     else:  # For macOS and Linux
         os.system('clear')
-
 def get_input():
 
     print("\noptions")
@@ -21,7 +20,6 @@ def get_input():
     print("exit - exit the program")
 
     return input()
-
 def current_tasks():
 
     print("\ncurrent tasks:")
@@ -34,21 +32,16 @@ def current_tasks():
         print(str(i+1) + ". " + task_keys[i] + " due " + str(due_date.strftime("%B")) + " " + str(due_date.strftime("%-d") + ", " + str(due_date.strftime("%Y"))) + " at " + str(due_date.strftime("%-H")) + ":" + str(due_date.strftime("%M")))
     
     # print(tasks)
-
 def print_result(result_text):
     clear_terminal()
     if result_text != "No result":
         print(result_text)
     current_tasks()
 
-
-
 tasks = {}
 fileOperations.init_load_from_file("tasks.txt", tasks)
 
 format_data = "%d/%m/%y %H:%M"
-
-
 
 while True:
 
