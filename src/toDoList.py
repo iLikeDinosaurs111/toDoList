@@ -60,7 +60,7 @@ def add_dict_to_list(list, task_name, task_due_date):
 
     list.append(dictionary)
     # print(list)
-
+#
 tasks = []
 fileOperations.init_load_from_file("tasks.txt", tasks)
 
@@ -157,4 +157,4 @@ while True:
             selected_dictionary["status"] = "missing"
         elif task_datetime > current_datetime:
             selected_dictionary["status"] = "upcoming"
-        fileOperations.save_list_to_file()
+        fileOperations.save_list_to_file("tasks.txt", tasks)
