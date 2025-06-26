@@ -35,9 +35,7 @@ def current_tasks():
     for i in range(len(tasks)):
         selected_dictionary = tasks[i]
         due_date = datetime.strptime(selected_dictionary["due_date"], format_data)
-        print(str(i+1) + ". " + selected_dictionary["name"] + " due " + str(due_date.strftime("%B")) + " " + str(due_date.strftime("%-d") + ", " + str(due_date.strftime("%Y"))) + " at " + str(due_date.strftime("%-H")) + ":" + str(due_date.strftime("%M")) + ", currently " + selected_dictionary["status"])
-
-       
+        print(str(i+1) + ". " + selected_dictionary["name"] + " due " + str(due_date.strftime("%B")) + " " + str(due_date.strftime("%-d") + ", " + str(due_date.strftime("%Y"))) + " at " + str(due_date.strftime("%-H")) + ":" + str(due_date.strftime("%M")) + ", currently " + selected_dictionary["status"]) 
         
 def print_result(result_text):
 
@@ -89,16 +87,13 @@ while True:
         print_result("task sucessfully added")
 
 
-
     if choice == "remove":
         clear_terminal()
         print("number of the task you want to remove")
         current_tasks()
         to_remove = input()
 
-        tasks_keys = list(tasks.keys())
-
-        del tasks[tasks_keys[int(to_remove)-1]]
+        del tasks[int(to_remove)-1]
 
 
         fileOperations.save_list_to_file("tasks.txt", tasks)
@@ -114,15 +109,9 @@ while True:
             print("the new name of the task")
             replacement = input()
 
-            tasks_keys = list(tasks.keys())
-            key = tasks_keys[int(replacement_index)-1]
-            value = tasks[key]
+            dictionary = tasks[int(replacement_index)-1]
+            dictionary["name"] = replacement
 
-            del tasks[key]
-
-            tasks[replacement] = value
-
-            tasks_keys = list(tasks.keys())
 
 
             fileOperations.save_list_to_file("tasks.txt", tasks)
@@ -138,11 +127,10 @@ while True:
         print("new date when the task is due: [DD/MM/YY HH:MM]")
         replacement_time = input()
 
-        task_due_date = datetime.strptime(replacement_time, format_data)
+        dictionary = tasks[int(replacement_index)-1]
+        print(dictionary)
+        dictionary["due_date"] = replacement_time
 
-        tasks_keys = list(tasks.keys())
-
-        tasks[tasks_keys[int(replacement_index)-1]] = task_due_date
         fileOperations.save_list_to_file("tasks.txt", tasks)
         print_result("task due date sucesfully changed")
 
