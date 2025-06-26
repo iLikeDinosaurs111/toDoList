@@ -148,3 +148,13 @@ while True:
     if choice == "exit":
         print_result("No result")
         break
+
+    for selected_dictionary in tasks:
+        task_datetime = datetime.strptime(selected_dictionary["due_date"], format_data)
+        current_datetime = datetime.now()
+
+        if task_datetime < current_datetime:
+            selected_dictionary["status"] = "missing"
+        elif task_datetime > current_datetime:
+            selected_dictionary["status"] = "upcoming"
+        fileOperations.save_list_to_file()
