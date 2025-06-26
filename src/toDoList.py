@@ -3,12 +3,16 @@ from datetime import datetime
 import fileOperations 
 
 def clear_terminal():
+    
     """Clears the terminal screen."""
     if os.name == 'nt':  # For Windows
         os.system('cls')
     else:  # For macOS and Linux
         os.system('clear')
+
 def get_input():
+    clear_terminal()
+    current_tasks()
 
     print("\noptions")
     print("add - add a task and its due date")
@@ -20,31 +24,52 @@ def get_input():
     print("exit - exit the program")
 
     return input()
+
 def current_tasks():
 
     print("\ncurrent tasks:")
     if len(tasks) == 0:
         print("no added tasks")
         return
-    task_keys = list(tasks.keys())
-    for i in range(len(task_keys)):
-        due_date = tasks[task_keys[i]]
-        print(str(i+1) + ". " + task_keys[i] + " due " + str(due_date.strftime("%B")) + " " + str(due_date.strftime("%-d") + ", " + str(due_date.strftime("%Y"))) + " at " + str(due_date.strftime("%-H")) + ":" + str(due_date.strftime("%M")))
     
-    # print(tasks)
+    for i in range(len(tasks)):
+        selected_dictionary = tasks[i]
+        due_date = datetime.strptime(selected_dictionary["due_date"], format_data)
+        print(str(i+1) + ". " + selected_dictionary["name"] + " due " + str(due_date.strftime("%B")) + " " + str(due_date.strftime("%-d") + ", " + str(due_date.strftime("%Y"))) + " at " + str(due_date.strftime("%-H")) + ":" + str(due_date.strftime("%M")) + ", currently " + selected_dictionary["status"])
+
+       
+        
 def print_result(result_text):
+
     clear_terminal()
     if result_text != "No result":
         print(result_text)
     current_tasks()
 
-tasks = {}
+def add_dict_to_list(list, task_name, task_due_date):
+    dictionary = {
+        "name": task_name,
+        "due_date": task_due_date,
+    }
+
+    task_datetime = datetime.strptime(task_due_date, format_data)
+    current_datetime = datetime.now()
+
+    if task_datetime < current_datetime:
+        dictionary["status"] = "missing"
+    elif task_datetime > current_datetime:
+        dictionary["status"] = "upcoming"
+
+    list.append(dictionary)
+    # print(list)
+
+tasks = []
 fileOperations.init_load_from_file("tasks.txt", tasks)
 
 format_data = "%d/%m/%y %H:%M"
 
 while True:
-
+    
     choice = get_input()
 
     if choice == "add":
@@ -58,10 +83,11 @@ while True:
 
         task_due_date = datetime.strptime(input_time, format_data)
 
-        tasks[new_task] = task_due_date
+        add_dict_to_list(tasks, new_task, input_time)
 
         fileOperations.save_list_to_file("tasks.txt", tasks)
         print_result("task sucessfully added")
+
 
 
     if choice == "remove":
@@ -126,7 +152,7 @@ while True:
 
 
     if choice == "reset":
-        tasks = {}
+        tasks = []
         print_result("task sucessfully reset")
         fileOperations.save_list_to_file("tasks.txt", tasks)
         
