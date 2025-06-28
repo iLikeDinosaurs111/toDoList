@@ -26,7 +26,6 @@ def get_input():
     return input()
 
 def current_tasks():
-
     print("\ncurrent tasks:")
     if len(tasks) == 0:
         print("no added tasks")
