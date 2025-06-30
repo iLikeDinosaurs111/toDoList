@@ -1,6 +1,8 @@
 import os
 import sqlite3
 from datetime import datetime
+import dbOperations
+
 
 def clear_terminal():
     """Clears the terminal screen."""
@@ -15,42 +17,20 @@ def get_input():
     print("\noptions")
     print("add - add a task")
     print("remove - remove a task")
-    print("edit task name - change the name of an already existing task")
-    print("edit due date - change the due date of an already existing taskexi")
+    print("edit task value - change the name or due date of an already existing task")
     print("view - view all tasks")
     print("reset - delete all tasks")
     print("exit - exit the program")
 
     return input()
 
-def current_tasks():
 
-    print("\ncurrent tasks:")
-    c.execute("SELECT rowid, * FROM tasks")
-    all_items = c.fetchall()
-    conn.commit()
-    if len(all_items) < 1:
-        print("no added tasks")
-        return
-
-    for index in range(len(all_items)):
-        task_due_date = datetime.strptime(all_items[index][2], format_data)
-
-        print(f"{str(index+1)}. {all_items[index][1]} due {task_due_date.strftime('%B %-d, %Y')} at {task_due_date.strftime('%-H:%M')}, currently {all_items[index][3]}")
-        
-def check_status(input_due_date):
-    task_due_date = datetime.strptime(input_due_date, format_data)
-    current_datetime = datetime.now()
-    if task_due_date < current_datetime:
-        return "missing"
-    else:
-        return "upcoming"
 
 def print_result(result_text):
     clear_terminal()
     if result_text != "No result":
         print(result_text)
-    current_tasks()
+    dbOperations.print_all_tasks()
 
 
 format_data = "%m/%d/%y %H:%M"
@@ -66,7 +46,7 @@ c.execute("""CREATE TABLE IF NOT EXISTS tasks (
           
     )""")
 
-
+print(dbOperations.get_column_names("tasks.db", 'tasks'))
 
 while True:
 
@@ -78,74 +58,49 @@ while True:
         print("name of task you want to add")
         new_task = input()
 
-        print("date when the task is due: [MM/DD/YY HH:MM]")
+        print("date when the task is due: (MM/DD/YY HH:MM)")
         input_time = input()
 
         
-        add_to_database = (new_task, input_time, check_status(input_time))
-        c.execute("INSERT INTO tasks VALUES (?, ?, ?)", add_to_database)
-        conn.commit()
+        dbOperations.add_one_task(new_task, input_time)
         print_result("task sucessfully added")
 
 
     if choice == "remove":
         clear_terminal()
         print("number of the task you want to remove")
-        current_tasks()
-        input_to_remove = int(input())
+        dbOperations.print_all_tasks()
+        index_to_remove = int(input())
+        index_to_remove -= 1
         
-        c.execute("SELECT rowid, * FROM tasks")
-        conn.commit()
-        all_items = c.fetchall()
-
-        c.execute("DELETE from tasks WHERE rowid = (?)", (all_items[input_to_remove-1][0],))
-        conn.commit()
+        dbOperations.remove_row('tasks.db', 'tasks', index_to_remove)
+        
         print_result("task sucessfully removed")
 
 
-    if choice == "edit task name":
+    if choice == "edit task values":
         clear_terminal()
         print("number of the task you want to replace")
-        current_tasks()
-        replacement_index = input()
+        dbOperations.print_all_tasks()
+        replacement_index = int(input())
+        replacement_index -= 1
+
+        print("what part of this task do you want to edit: (name / due date)")
+        column_name = input()
+
         clear_terminal()
-        print("name of which you want to use to replace")
+        if column_name == "name":
+            print("enter replacement name")
+        elif column_name == "due date":
+            print("enter replacement date: (MM/DD/YY HH:MM)")
         replacement = input()
 
-        c.execute("SELECT rowid, * FROM tasks")
-        conn.commit()
-        all_items = c.fetchall()
 
-        c.execute("""UPDATE tasks SET name = (?)
-                  WHERE rowid = (?)""", (replacement, all_items[int(replacement_index)-1][0]))
-        conn.commit()
+        dbOperations.edit_task_value(column_name, replacement_index, replacement)
 
         # tasks[int(replacement_index)-1] = replacement
         print_result("task sucessfully replaced")
 
-
-    if choice == "edit due date":
-        clear_terminal()
-        print("number of the task you want to replace")
-        current_tasks()
-        replacement_index = input()
-        clear_terminal()
-        print("due date of which you want to use to replace")
-        replacement = input()
-
-        c.execute("SELECT rowid, * FROM tasks")
-        conn.commit()
-        all_items = c.fetchall()
-
-        c.execute("""UPDATE tasks SET due_date = (?)
-                    WHERE rowid = (?)""", (replacement, all_items[int(replacement_index)-1][0]))
-        c.execute("""UPDATE tasks SET status = (?)
-                    WHERE rowid = (?)""", (check_status(replacement), all_items[int(replacement_index)-1][0]))
-        conn.commit()
-
-        # tasks[int(replacement_index)-1] = replacement
-        print_result("task sucessfully replaced")
-    
 
     if choice == "view":
         print_result("No result")
@@ -170,10 +125,4 @@ while True:
         break
 
     # make sure all status is up to date
-    c.execute("SELECT rowid, * FROM tasks")
-    all_items = c.fetchall()
-    for item in all_items:
-        new_status = check_status(item[2])
-        c.execute("""UPDATE tasks SET status = (?)
-                    WHERE rowid = (?)""", (new_status, item[0],))
-    conn.commit()
+    dbOperations.update_statuses('tasks.db', 'tasks')
